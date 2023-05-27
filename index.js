@@ -8,8 +8,16 @@ const jwt = require("jsonwebtoken");
 
 // middleware
 app.use(cors());
+// const corsConfig = {
+//   origin: '',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE']
+// }
+// app.use(cors(corsConfig))
+// app.options("", cors(corsConfig))
 app.use(express.json());
 
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qud1tkv.mongodb.net/?retryWrites=true&w=majority`;
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.qud1tkv.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -43,7 +51,7 @@ const verifyJWT = (req, res, next) => {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const serviceCollection = client.db("carDoctor").collection("services");
     const checkOutCollection = client.db("carDoctor").collection("bookings");
@@ -61,19 +69,19 @@ async function run() {
 
     //services related
     app.get("/services", async (req, res) => {
-      const sort = req.query.sort;
+      // const sort = req.query.sort;
       const search = req.query.search;
       const query = {title:{$regex:search, $options:"i"}}
       // const query = {price:{$lte:150}};
       // const query={}
-      const options = {
-        // sort matched documents in descending order by rating
-        sort: {
-          price: sort === "asc" ? 1 : -1
-        }
-      };
-      const cursor = serviceCollection.find(query, options);
-      const result = await cursor.toArray();
+      // const options = {
+      //   // sort matched documents in descending order by rating
+      //   sort: {
+      //     price: sort === "asc" ? 1 : -1
+      //   }
+      // };
+      // const cursor = serviceCollection.find(query);
+      const result = await serviceCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -132,7 +140,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
